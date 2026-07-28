@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Página 1 - Drive</title>
+  </head>
+  <body>
+    <h2>Página 1 — Acceso a Google Drive</h2>
+    <form id="cfg">
+      <label>Nombre cuenta Drive: <input name="accountName" /></label><br />
+      <label>Key JSON (pegar JSON de la cuenta de servicio):</label><br />
+      <textarea name="keyJson" rows="10" cols="60"></textarea><br />
+      <label>Folder ID: <input name="folderId" /></label><br />
+      <button type="submit">Guardar configuración</button>
+    </form>
+
+    <button id="listFiles">Listar archivos</button>
+    <ul id="files"></ul>
+    <p><a href="/public/app.html">Volver al menú</a></p>
+    <script>
+      document.getElementById('cfg').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const fd = new FormData(e.target);
+        const body = { accountName: fd.get('accountName'), keyJson: fd.get('keyJson'), folderId: fd.get('folderId') };
+        const res = await fetch('/api/drive-config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        const j = await res.json();
+        if (res.ok) alert('Configuración guardada en sesión'); else alert(j.error || 'Error');
+      });
+
+      document.getElementById('listFiles').addEventListener('click', async () => {
+        const res = await fetch('/api/drive-files');
+        const j = await res.json();
+        const ul = document.getElementById('files');
+        ul.innerHTML = '';
+        if (res.ok) {
+          (j.files || []).forEach(f => {
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.href = f.webViewLink || '#';
+            a.target = '_blank';
+            a.textContent = `${f.name} (${f.mimeType})`;
+            li.appendChild(a);
+            ul.appendChild(li);
+          });
+        } else {
+          alert(j.error || 'Error');
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>App</title>
+  </head>
+  <body>
+    <h2>Aplicación - Menú</h2>
+    <nav>
+      <a href="/public/page1.html">Página 1 - Drive</a> |
+      <a href="/public/page2.html">Página 2</a> |
+      <a href="/public/page3.html">Página 3</a> |
+      <a href="#" id="logout">Cerrar sesión</a>
+    </nav>
+    <script>
+      document.getElementById('logout').addEventListener('click', async (e) => {
+        e.preventDefault();
+        await fetch('/api/logout', { method: 'POST' });
+        window.location.href = '/';
+      });
+    </script>
+  </body>
+</html>
